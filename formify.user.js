@@ -10,7 +10,7 @@
 // @grant        GM.xmlHttpRequest
 // @connect      googleapis.com
 // @namespace    https://docs.google.com/
-// @match        https://docs.google.com/forms/d/*
+// @match        https://docs.google.com/forms/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=google.com
 // @downloadURL https://update.greasyfork.org/scripts/480209/Google%20Formify.user.js
 // @updateURL https://update.greasyfork.org/scripts/480209/Google%20Formify.meta.js
