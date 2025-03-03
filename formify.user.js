@@ -17,6 +17,10 @@
 // ==/UserScript==
 
 const style = `
+        body.hidden {
+            overflow: hidden;
+        }
+
         .dialog-container * {
             margin: 0;
             padding: 0;
@@ -29,7 +33,7 @@ const style = `
             top: 0;
             left: 0;
             height: 100vh;
-            width: 100vw;
+            width: 98vw;
             background-color: rgba(0, 0, 0, 0.836);
             z-index: 999;
             display: none;
@@ -252,6 +256,11 @@ const html = `
                         </select>
                     </li>
                     <li>
+                        <label for="custom-prompt">Custom Prompt</label>
+                        <input type="text" name="custom-prompt" id="custom-prompt"
+                            placeholder="Custom prompt to feed the model">
+                    </li>
+                    <li>
                         <label for="">Dialog Shortcuts</label>
                         <code>ALT + K</code>
                     </li>
@@ -280,8 +289,9 @@ const script = `
         const apiField = document.querySelector('.dialog-container .dialog input#apikey');
         const modelSelect = document.querySelector('.dialog-container .dialog select#ai-model');
         const searchEngineSelect = document.querySelector('.dialog-container .dialog select#search-engine');
+        const customPromptField = document.querySelector('.dialog-container .dialog input#custom-prompt');
 
-        const saveItem = (key, value) => {
+        const setItem = (key, value) => {
             const storage = localStorage.getItem('formify');
             const parsedStorage = JSON.parse(storage || '{}');
 
@@ -296,13 +306,24 @@ const script = `
             return parsedStorage[key];
         }
 
-        const apikey = getItem('apikey');
+        const apiKey = getItem('apiKey');
         const model = getItem('model');
         const searchEngine = getItem('searchEngine');
+        const customPrompt = getItem('customPrompt');
+
+        if(!model)
+          setItem('model', "gemini-2.0-flash");
+
+        if(!searchEngine)
+          setItem('searchEngine', "https://www.google.com/search?q=")
+
+        if(!customPrompt)
+          setItem("customPrompt", "Please answer my question in short, quick and correct way. Keep things minimal: ");
         
-        apiField.value = apikey;
-        modelSelect.value = model;
-        searchEngineSelect.value = searchEngine;
+        apiField.value = apiKey || "";
+        modelSelect.value = model || "gemini-2.0-flash";
+        searchEngineSelect.value = searchEngine || "https://www.google.com/search?q=";
+        customPromptField.value = customPrompt || "Please answer my question in short, quick and correct way. Keep things minimal: ";
 
         overlay.addEventListener('click', (e) => {
             if (
@@ -314,22 +335,29 @@ const script = `
         });
 
         apiField.addEventListener('input', (e) => {
-            const apikey = e.target.value;
-            saveItem('apikey', apikey);
+            const apiKey = e.target.value;
+            setItem('apiKey', apiKey);
         });
 
         modelSelect.addEventListener('change', function (e) {
             const selectedModel = this.options[this.selectedIndex].value;
-            saveItem('model', selectedModel);
+            setItem('model', selectedModel);
         });
 
         searchEngineSelect.addEventListener('change', function (e) {
             const selectedEngine = this.options[this.selectedIndex].value;
-            saveItem('searchEngine', selectedEngine);
+            setItem('searchEngine', selectedEngine);
+        });
+
+        customPromptField.addEventListener('input', (e) => {
+            const promptValue = e.target.value;
+            setItem('customPrompt', apiKey);
         });
 `;
 
-window.testTrusted = function() {
+// Disables the trusted policy and allows to use
+// innerHTML while inserting inline HTML
+window.testTrusted = function () {
   if (typeof window != "undefined" &&
     ('trustedTypes' in window) &&
     ('createPolicy' in window.trustedTypes) &&
@@ -339,28 +367,32 @@ window.testTrusted = function() {
     setTimeout(window.testTrusted, 1000);
   }
 }
-
 window.testTrusted();
 
 class Utils {
   constructor() { }
 
+  // Attach a style to head
   static attachStyle(style) {
     const styleElement = document.createElement("style");
     styleElement.innerHTML = style;
     document.head.appendChild(styleElement);
   }
 
+  // Attach html
+  // Main point of failure sometime because of trusted type
   static attachHTML(html) {
     document.body.innerHTML += html;
   }
 
+  // Attach script
   static attachScript(script) {
     const scriptElement = document.createElement("script");
     scriptElement.innerHTML = script;
     document.body.appendChild(scriptElement);
   }
 
+  // Know field type in better way
   static getFieldType(id) {
     const fields = {
       SHORT_ANSWER: 0,
@@ -385,6 +417,7 @@ class Utils {
     return models[model];
   }
 
+  // Return an attachable model that contains model response
   static answerModal({ modelName, question, option, answer, modelURL, searchEngineURL }) {
     const div = document.createElement("div");
     div.classList.add("ai-container");
@@ -455,6 +488,7 @@ class Utils {
     return div;
   }
 
+  // Get value for key from localstorage
   static getItem(key) {
     const storage = localStorage.getItem('formify');
     const parsedStorage = JSON.parse(storage || '{}');
@@ -462,6 +496,7 @@ class Utils {
     return parsedStorage[key];
   }
 
+  // Set a value to a key in localstorage
   static setItem(key, value) {
     const storage = localStorage.getItem('formify');
     const parsedStorage = JSON.parse(storage || '{}');
@@ -470,6 +505,7 @@ class Utils {
     localStorage.setItem('formify', JSON.stringify(parsedStorage));
   }
 
+  // Create a simple request and return json
   static async request(url, options) {
     const response = await fetch(url, options);
     const data = await response.json();
@@ -477,23 +513,21 @@ class Utils {
     return data;
   }
 
+  // Dialog on/off
   static toggleDialog(force) {
     const dialog = document.querySelector(".dialog-container");
 
     if (!dialog) {
       console.warn("[!] Dialog not found");
+      return;
     }
 
     if (force === true) {
-      dialog.classList.add("active");
+      dialog.classList.remove("hidden");
     } else if (force === false) {
-      dialog.classList.remove("active");
+      dialog.classList.add("active");
     } else {
       dialog.classList.toggle("active");
-    }
-
-    if (dialog.classList.contains("active")) {
-      dialog.scrollIntoView();
     }
   }
 }
@@ -684,7 +718,7 @@ class AI {
   // Note that prompt can be chat history too
   static async getResponse(model, prompt, apiKey) {
     if (!apiKey) {
-      return Promise.reject("API key is missing");
+      return Promise.reject("API key is missing. Get your api key from <a href='https://aistudio.google.com/apikey'>AI Studio</a> for free.");
     }
 
     if (
@@ -700,11 +734,16 @@ class AI {
           method: "POST",
           body: JSON.stringify({
             "contents": [{
-              "parts": [{ "text": prompt }],
+              "parts": [
+                {
+                  "text": Utils.getItem("customPrompt") + prompt,
+                }
+              ],
             }],
           }),
         }
       )
+
       return response;
     }
 
@@ -712,14 +751,14 @@ class AI {
   }
 }
 
-(function() {
+(function () {
   'use strict';
 
   Utils.attachStyle(style);
   Utils.attachHTML(html);
   Utils.attachScript(script);
 
-  if (Utils.getItem('apikey')) {
+  if (!Utils.getItem('apiKey')) {
     Utils.toggleDialog(true);
   }
 
@@ -734,8 +773,10 @@ class AI {
     throw new Error("Failed to parse form content");
   }
 
-  const overlay = document.querySelector(".dialog-container");
 
+  // Event listener for dialog toggles
+  // TODO: Implement same but for mac since alt
+  // key doesn't exist
   document.addEventListener('keydown', (e) => {
     if ((e.key == 'k' && e.altKey) || e.key == 'Escape') {
       Utils.toggleDialog()
@@ -749,40 +790,48 @@ class AI {
     }
   });
 
+  // All question elements
   const questions = document.querySelectorAll(".Qr7Oae[role='listitem']");
   if (questions.length != scrapedContent.questions.length) {
     console.warn("[W] Number of questions in form and scraped content are not same.");
   }
 
   for (let i = 0; i < Math.min(questions.length, scrapedContent.questions.length); i++) {
-    const question = scrapedContent.questions[i];
     const questionContainer = questions[i];
 
-    const selectedModel = Utils.getItem('model') || "gemini-2.0-pro-experimental";
+    const question = scrapedContent.questions[i];
+    const prompt = question.title + (
+      question.options?.map(option => option.value) || ""
+    )
+
+    const selectedModel = Utils.getItem('model') || "gemini-2.0-flash";
     const selectedSearchEngine = Utils.getItem('searchEngine') || "https://www.google.com/search?q=";
 
-    const apiKey = Utils.getItem('apikey');
+    const apiKey = Utils.getItem('apiKey');
 
-    console.log(apiKey);
-    console.log(selectedModel);
-    console.log(selectedSearchEngine);
-
-    AI.getResponse(selectedModel, question.title, apiKey)
+    AI.getResponse(selectedModel, prompt, apiKey)
       .then((response) => {
-        console.log(response);
-
         const aiResponse = Utils.answerModal({
           modelName: selectedModel,
           question: question.title,
           option: question.options,
-          answer: response?.candidates[0]?.content?.parts[0]?.text || "No response found",
+          answer: response?.candidates?.[0]?.content?.parts?.[0]?.text || "No response found",
           modelURL: Utils.getModelURL(selectedModel),
           searchEngineURL: selectedSearchEngine
         });
 
         questionContainer.appendChild(aiResponse);
       }, (err) => {
-        console.error("[E] Failed to get response for question: ", question.title);
+        const failedResponse = Utils.answerModal({
+          modelName: selectedModel,
+          question: question.title,
+          option: question.options,
+          answer: err,
+          modelURL: Utils.getModelURL(selectedModel),
+          searchEngineURL: selectedSearchEngine
+        });
+
+        questionContainer.appendChild(failedResponse);
       });
   }
 })();
