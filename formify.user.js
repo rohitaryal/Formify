@@ -231,12 +231,12 @@ const html = `
                     <li>
                         <label for="model">AI Model</label>
                         <select name="model" id="ai-model">
-                            <option value="">Gemini 2.0 Pro Experimental</option>
+                            <option value="gemini-2.0-pro-exp-02-05">Gemini 2.0 Pro Experimental</option>
                             <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
-                            <option value="">Gemini 2.0 Flash-Lite</option>
-                            <option value="">Gemini 1.5 Pro</option>
-                            <option value="">gpt-4.5-preview</option>
-                            <option value="">gpt-4o-mini</option>
+                            <option value="gemini-2.0-flash-lite">Gemini 2.0 Flash-Lite</option>
+                            <option value=""gemini-1.5-pro"">Gemini 1.5 Pro</option>
+                            <option value="gpt-4.5-preview">gpt-4.5-preview</option>
+                            <option value="gpt-4o-mini">gpt-4o-mini</option>
                         </select>
                     </li>
                     <li>
@@ -312,7 +312,7 @@ const script = `
         const customPrompt = getItem('customPrompt');
 
         if(!model)
-          setItem('model', "gemini-2.0-flash");
+          setItem('model', "gemini-2.0-flash-lite");
 
         if(!searchEngine)
           setItem('searchEngine', "https://www.google.com/search?q=")
@@ -723,7 +723,8 @@ class AI {
 
     if (
       model == "gemini-2.0-flash" ||
-      model == "gemini-2.0-pro-experimental"
+      model == "gemini-2.0-pro-experimental" ||
+      model == "gemini-2.0-flash-lite"
     ) {
       const response = await Utils.request(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -811,14 +812,35 @@ class AI {
 
     AI.getResponse(selectedModel, prompt, apiKey)
       .then((response) => {
+        // Actual answer so deep inside, deeper than your                                                                            THOUGHTS
+        const answer = response?.candidates?.[0]?.content?.parts?.[0]?.text;
+
         const aiResponse = Utils.answerModal({
           modelName: selectedModel,
           question: question.title,
           option: question.options,
-          answer: response?.candidates?.[0]?.content?.parts?.[0]?.text || "No response found",
+          answer: answer || "No response found",
           modelURL: Utils.getModelURL(selectedModel),
           searchEngineURL: selectedSearchEngine
         });
+
+        // Get all options element in current question
+        // Expected to work
+        const options = questionContainer.querySelectorAll("label");
+        for (const option of options) {
+          if (answer?.toLowerCase().includes(option)) {
+
+            // These are clickable types i:e MCQ and Multi select option
+            if (question.type == 2 || question.type == 4) {
+              console.log("Clicked");
+              option.click();
+              if (question.type == 2) {
+                break;
+              }
+            }
+          }
+        }
+
 
         questionContainer.appendChild(aiResponse);
       }, (err) => {
