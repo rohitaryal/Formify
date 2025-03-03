@@ -479,7 +479,7 @@ class Utils {
     searchButton.onclick = () => {
       // If options are provided as array
       if (typeof option == 'object') {
-        option = option.map((opt) => opt.value).join(" ");
+        option = option.map((opt) => opt.value).join(",");
       }
 
       window.open(`${searchEngineURL}${question} ${option}`, "_blank");
@@ -801,7 +801,7 @@ class AI {
 
     const question = scrapedContent.questions[i];
     const prompt = question.title + (
-      question.options?.map(option => option.value) || ""
+      question.options?.map(option => option.value + ", ") || ""
     )
 
     const selectedModel = Utils.getItem('model') || "gemini-2.0-flash";
