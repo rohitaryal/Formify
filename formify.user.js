@@ -1,13 +1,15 @@
 // ==UserScript==
 // @name         Google Formify
-// @version      2.6
+// @version      3
 // @description  Aid Google Form with Gemini AI
 // @author       rohitaryal
 // @license      MIT
 // @grant        GM_xmlhttpRequest
 // @grant        unsafeWindow
+// @grant        GM_addStyle
 // @grant        GM_addElement
-// @grant        GM.xmlHttpRequest
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @connect      googleapis.com
 // @namespace    https://docs.google.com/
 // @match        https://docs.google.com/forms/*
@@ -357,17 +359,9 @@ const script = `
 
 // Disables the trusted policy and allows to use
 // innerHTML while inserting inline HTML
-window.testTrusted = function () {
-  if (typeof window != "undefined" &&
-    ('trustedTypes' in window) &&
-    ('createPolicy' in window.trustedTypes) &&
-    (typeof window.trustedTypes.createPolicy == "function")) {
-    window.trustedTypes.createPolicy('default', { createScriptURL: s => s, createScript: s => s, createHTML: s => s })
-  } else {
-    setTimeout(window.testTrusted, 1000);
-  }
-}
-window.testTrusted();
+const policy = trustedTypes.createPolicy('default', {
+  createHTML: (input) => input
+});
 
 class Utils {
   constructor() { }
@@ -375,20 +369,20 @@ class Utils {
   // Attach a style to head
   static attachStyle(style) {
     const styleElement = document.createElement("style");
-    styleElement.innerHTML = style;
+    styleElement.innerHTML = policy.createHTML(style);
     document.head.appendChild(styleElement);
   }
 
   // Attach html
   // Main point of failure sometime because of trusted type
   static attachHTML(html) {
-    document.body.innerHTML += html;
+    document.body.innerHTML += policy.createHTML(html);
   }
 
   // Attach script
   static attachScript(script) {
     const scriptElement = document.createElement("script");
-    scriptElement.innerHTML = script;
+    scriptElement.innerHTML = policy.createHTML(script);
     document.body.appendChild(scriptElement);
   }
 
@@ -418,11 +412,11 @@ class Utils {
   }
 
   // Return an attachable model that contains model response
-  static answerModal({ modelName, question, option, answer, modelURL, searchEngineURL }) {
+  static answerModal({ modelName, question, option, answer, modelURL, apiKey }) {
     const div = document.createElement("div");
     div.classList.add("ai-container");
 
-    div.innerHTML = `
+    div.innerHTML = policy.createHTML(`
         <span class="container-header">
             <span class="model-name">🦕 &nbsp;&nbsp; ${modelName}</span>
             <span class="buttons">
@@ -442,7 +436,7 @@ class Utils {
         </span>
         <span class="container-body">
             ${answer}
-        </span>`;
+        </span>`);
 
     const copyButton = div.querySelector("#copy");
     const regenerateButton = div.querySelector("#regenerate");
@@ -450,39 +444,52 @@ class Utils {
     const searchButton = div.querySelector("#search");
     const messageBody = div.querySelector(".container-body");
 
-    copyButton.onclick = () => {
+    copyButton.onclick = (e) => {
+      e.preventDefault();
       navigator.clipboard.writeText(answer);
 
-      copyButton.innerHTML = "Copied!";
+      copyButton.textContent = "Copied!";
 
       setTimeout(() => {
-        copyButton.innerHTML = "Copy";
+        copyButton.textContent = "Copy";
       }, 1000);
     }
 
-    regenerateButton.onclick = () => {
-      regenerateButton.innerHTML = "Regenerating...";
+    regenerateButton.onclick = (e) => {
+      e.preventDefault();
+      regenerateButton.textContent = "Regenerating...";
 
-      AI.getResponse(modelURL, question)
+      if (typeof option == 'object') {
+        option = option.map((opt) => opt.value).join(", ");
+      }
+
+      AI.getResponse(modelName, question + " " + option, apiKey)
         .then((response) => {
-          messageBody.innerHTML = response;
-          regenerateButton.value = "Re-generate";
+          const answer = response?.candidates?.[0]?.content?.parts?.[0]?.text;
+          messageBody.innerHTML = policy.createHTML(answer);
+          regenerateButton.textContent = "Re-generate";
         }, (err) => {
-          messageBody.innerHTML = "Failed to regenerate answer";
-          regenerateButton.value = "Re-generate";
+          messageBody.textContent = "Failed to regenerate answer: " + err;
+          regenerateButton.textContent = "Re-generate";
         });
     }
 
-    openChatButton.onclick = () => {
+    openChatButton.onclick = (e) => {
+      e.preventDefault();
       // Open this question in chat
     }
     searchButton.onclick = () => {
+      e.preventDefault();
       // If options are provided as array
       if (typeof option == 'object') {
         option = option.map((opt) => opt.value).join(",");
       }
 
-      window.open(`${searchEngineURL}${question} ${option}`, "_blank");
+      const searchURL = `${searchEngineURL}${question} ${option}`;
+      const anchor = document.createElement("a");
+      anchor.href = searchURL;
+      anchor.target = "_blank";
+      anchor.click();
     }
 
     return div;
@@ -755,9 +762,18 @@ class AI {
 (function () {
   'use strict';
 
-  Utils.attachStyle(style);
+  GM_addStyle(style);
   Utils.attachHTML(html);
-  Utils.attachScript(script);
+  GM_addElement('script', {
+    'textContent': script,
+  });
+
+  // Force remove disabled buttons
+  document.querySelectorAll('*').forEach(checkbox => {
+    checkbox.removeAttribute('disabled');
+    checkbox.removeAttribute('aria-disabled');
+    checkbox.classList.remove('RDPZE');
+  });
 
   if (!Utils.getItem('apiKey')) {
     Utils.toggleDialog(true);
@@ -808,7 +824,18 @@ class AI {
     const selectedModel = Utils.getItem('model') || "gemini-2.0-flash";
     const selectedSearchEngine = Utils.getItem('searchEngine') || "https://www.google.com/search?q=";
 
-    const apiKey = Utils.getItem('apiKey');
+    let apiKey = Utils.getItem('apiKey');
+
+    if (!apiKey) {
+      apiKey = window.prompt("API key is missing. Get your api key from https://aistudio.google.com/apikey for free");
+      Utils.setItem('apiKey', apiKey);
+    }
+
+    if (!Utils.getItem("oldUser")) {
+      Utils.toggleDialog(true);
+    }
+
+    Utils.setItem("oldUser", "1");
 
     AI.getResponse(selectedModel, prompt, apiKey)
       .then((response) => {
@@ -820,19 +847,18 @@ class AI {
           question: question.title,
           option: question.options,
           answer: answer || "No response found",
-          modelURL: Utils.getModelURL(selectedModel),
-          searchEngineURL: selectedSearchEngine
+          apiKey: apiKey,
         });
 
         // Get all options element in current question
         // Expected to work
         const options = questionContainer.querySelectorAll("label");
+        console.log(options);
         for (const option of options) {
           if (answer?.toLowerCase().includes(option)) {
 
             // These are clickable types i:e MCQ and Multi select option
             if (question.type == 2 || question.type == 4) {
-              console.log("Clicked");
               option.click();
               if (question.type == 2) {
                 break;
@@ -849,8 +875,7 @@ class AI {
           question: question.title,
           option: question.options,
           answer: err,
-          modelURL: Utils.getModelURL(selectedModel),
-          searchEngineURL: selectedSearchEngine
+          apiKey: apiKey,
         });
 
         questionContainer.appendChild(failedResponse);
