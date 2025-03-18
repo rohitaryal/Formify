@@ -1,20 +1,21 @@
 # Formify
 
-Integrate your google form with AI 🚀 and let it solve them for you 🤓 (Auto google-form solver 🐍)
+Integrate your google form with AI 🚀 and let it solve them for you (Auto google-form solver 🐍)
 
 ## Google Formify Features 🐱
 
-- Show AI answers at the bottom of your question 🤑
-- Auto-select the correct option according to AI aswer 🍼
-- Shortcut to hide/unhide the AI from someone 💀
-- Integrated Google Search for each question 🔍
-- Integrated copy buttons for each question 🐐
+- Show AI answers at the bottom of your question
+- Auto-select the correct option according to AI aswer
+- Shortcut to hide/unhide the AI from someone
+- Integrated Google Search for each question
+- Integrated copy buttons for each question
 
 ## Shortcut 🐬
 
-Press `CTRL` + `ALT` key to quickly hide/unhide 🪼 the AI containers and elements from the form page.
+Press `ALT` + `K` key to quickly hide/unhide 🪼 the AI containers and elements from the form page.
+Press `ALT` + `M` key to view/hide AI settings
 
-☢️ **DESCLAIMER:** Cheating is bad like really. This project doesn's support cheating nor cheaters 🫵. It is recommended to test this script in a review mode and not on a real test/quizzes. By using this script, you acknowledge that you understand and agree to this disclaimer. 💯
+☢️ **DESCLAIMER:** Cheating is bad like really. This project doesn's support cheating nor cheaters 🫵. It is recommended to test this script in a review mode and not on a real test/quizzes. By using this script, you acknowledge that you understand and agree to this disclaimer.
 
 ### 📸 Screenshot?
 
