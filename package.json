@@ -1,0 +1,14 @@
+{
+  "name": "formify",
+  "private": true,
+  "scripts": {
+    "build": "bun build/build.ts",
+    "dev": "bun --watch build/serve.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}
