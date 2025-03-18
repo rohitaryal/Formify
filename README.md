@@ -14,7 +14,7 @@ Integrate your google form with AI 🚀 and let it solve them for you 🤓 (Auto
 
 Press `CTRL` + `ALT` key to quickly hide/unhide 🪼 the AI containers and elements from the form page.
 
-☢️ **DESCLAIMER:** Cheating is bad like really. This project doesn's support cheating nor cheaters 🫵. It merely exists to show common vulnerabilities and flaw in moodle, for experimenting purpose and as my scripting practice. This script is provided "as is" without any warranties, express or implied. The author takes no responsibility for any consequences resulting from the use of this script. Use it at your own risk. It is recommended to test this script in a review mode and not on a real test/quizzes. By using this script, you acknowledge that you understand and agree to this disclaimer. 💯
+☢️ **DESCLAIMER:** Cheating is bad like really. This project doesn's support cheating nor cheaters 🫵. It is recommended to test this script in a review mode and not on a real test/quizzes. By using this script, you acknowledge that you understand and agree to this disclaimer. 💯
 
 ### 📸 Screenshot?
 
@@ -41,7 +41,7 @@ Press `CTRL` + `ALT` key to quickly hide/unhide 🪼 the AI containers and eleme
 
    - ![Greasy Fork](https://www.google.com/s2/favicons?sz=16&domain=greasyfork.org) [Greasyfork.org](https://greasyfork.org/en/scripts/480209-google-formify) or
 
-   - ![GitHub](https://www.google.com/s2/favicons?sz=8&domain=github.com) [Github](https://github.com/rohitaryal/formify/raw/main/formify.user.js)
+   - ![GitHub](https://www.google.com/s2/favicons?sz=8&domain=github.com) [Github](https://github.com/rohitaryal/Formify/blob/main/dist/formify.user.js)
 
 3. **(Optional)** You can check the script by filling up [THIS GOOGLE FORM](https://docs.google.com/forms/d/e/1FAIpQLSd5A4xLjNMmo9MxlMRSXYBiAd66eIHkrCInFNZ9aCs4HLIiyw/viewform)
 
