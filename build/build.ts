@@ -7,11 +7,12 @@ const build = async (isProduction: boolean = false): Promise<string> => {
         const result = await Bun.build({
             entrypoints: [ENTRY_POINT],
 
-            // Append the HTML file, the tricky part
             banner:
                 await Bun.file(BANNER_FILE).text() +
                 "\n\n" +
-                `const html = \`${await Bun.file("src/static/dialog.html").text()}\`;`,
+                `const css = \`${await Bun.file("src/static/style.css").text()}\`;` +
+                "\n\n" +
+                `const js = \`${await Bun.file("src/static/script.js").text()}\`;`,
 
             ...(isProduction ? { outdir: OUTPUT_DIR } : {}),
         });
