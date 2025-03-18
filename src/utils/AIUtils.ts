@@ -14,7 +14,8 @@ const getAIResponse = async (prompt: PromptType): Promise<string> => {
 
     if (model == "gemini-2.0-flash" ||
         model == "gemini-2.0-pro-experimental" ||
-        model == "gemini-2.0-flash-lite") {
+        model == "gemini-2.0-flash-lite" ||
+        model == "gemini-2.0-pro-exp-02-05") {
         return getGeminiResponse(prompt);
     } else {
         return "Model not supported for now: " + model;

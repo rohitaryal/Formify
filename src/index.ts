@@ -7,6 +7,8 @@ import { getAIResponse } from "./utils/AIUtils";
 declare const css: string;
 declare const js: string;
 
+declare const unsafeWindow: any;
+
 declare const GM_addStyle: (css: string) => void;
 declare const GM_addElement: (type: string, options: { textContent: string }) => void;
 
@@ -38,7 +40,14 @@ declare const GM_addElement: (type: string, options: { textContent: string }) =>
         }
     });
 
-    const scrapedContent: ParsedResult = window.FB_PUBLIC_LOAD_DATA_ ? variableParse(window.FB_PUBLIC_LOAD_DATA_) : htmlParse();
+    let scrapedContent: ParsedResult = htmlParse();
+
+    // try {
+    //     scrapedContent = unsafeWindow.FB_PUBLIC_LOAD_DATA_ ? variableParse(window.FB_PUBLIC_LOAD_DATA_) : htmlParse()
+    // } catch {
+
+    // }
+
     const questionContainers = document.querySelectorAll(".Qr7Oae[role='listitem']");
 
     for (let i = 0; i < questionContainers.length; i++) {

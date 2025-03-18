@@ -6,6 +6,7 @@
 // @license      MIT
 // @grant        GM_addElement
 // @grant        GM_addStyle
+// @grant        unsafeWindow
 // @namespace    https://docs.google.com/
 // @match        https://docs.google.com/forms/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=docs.google.com
@@ -389,6 +390,16 @@ var formQuestionParser = (form) => {
     const dataParams = infoContainerDiv?.getAttribute("data-params");
     const betterDataParams = dataParams?.replace("%.@.", "[").replace(/&quot;/g, "'");
     const question = JSON.parse(betterDataParams || "[]")[0];
+    if (!question) {
+      return {
+        title: "",
+        moreInfo: "",
+        type: -1,
+        id: "",
+        required: false,
+        options: []
+      };
+    }
     const questionTitle = question[1];
     const extraInformation = question[9] || null;
     const questionType = question[3];
@@ -418,39 +429,6 @@ var parse = () => {
   }
   const { formDescription, formTitle } = formHeaderParser(form);
   const parsedQuestionList = formQuestionParser(form);
-  return {
-    title: formTitle,
-    description: formDescription,
-    questions: parsedQuestionList
-  };
-};
-
-// src/utils/parsers/GlobalVariableParser.ts
-var parse2 = (data) => {
-  const formTitle = data[1][8];
-  const formDescription = data[1][0];
-  const questionList = data[1][1];
-  const parsedQuestionList = questionList.map((question) => {
-    const questionTitle = question[1];
-    const extraInformation = question[9] || null;
-    const questionType = question[3];
-    const submitID = question[4][0][0];
-    const isRequiredQuestion = !!question[4][0][2];
-    const options = question[4][0][1]?.map((option) => {
-      return {
-        value: option[0],
-        moreInfo: option[5] || null
-      };
-    });
-    return {
-      title: questionTitle,
-      moreInfo: extraInformation,
-      type: questionType,
-      id: submitID,
-      required: isRequiredQuestion,
-      options
-    };
-  });
   return {
     title: formTitle,
     description: formDescription,
@@ -522,7 +500,7 @@ var request = async (requestURL, requestOption = {
 // src/utils/AIUtils.ts
 var getAIResponse = async (prompt2) => {
   const model = getItem("model") || "gemini-2.0-flash";
-  if (model == "gemini-2.0-flash" || model == "gemini-2.0-pro-experimental" || model == "gemini-2.0-flash-lite") {
+  if (model == "gemini-2.0-flash" || model == "gemini-2.0-pro-experimental" || model == "gemini-2.0-flash-lite" || model == "gemini-2.0-pro-exp-02-05") {
     return getGeminiResponse(prompt2);
   } else {
     return "Model not supported for now: " + model;
@@ -914,7 +892,7 @@ var ready = () => {
       toggleAnswers();
     }
   });
-  const scrapedContent = window.FB_PUBLIC_LOAD_DATA_ ? parse2(window.FB_PUBLIC_LOAD_DATA_) : parse();
+  let scrapedContent = parse();
   const questionContainers = document.querySelectorAll(".Qr7Oae[role='listitem']");
   for (let i = 0;i < questionContainers.length; i++) {
     const questionContainer = questionContainers[i];

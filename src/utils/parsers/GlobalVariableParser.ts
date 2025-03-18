@@ -13,6 +13,17 @@ const parse = (data: any[]): ParsedResult => {
 
     // Parse questions in readable and easy way
     const parsedQuestionList = questionList.map((question: any) => {
+        if (!question) {
+            return {
+                title: "",
+                moreInfo: "",
+                type: -1,
+                id: "",
+                required: false,
+                options: [],
+            }
+        }
+
         const questionTitle = question[1];
 
         // Extra information are like images in question

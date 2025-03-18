@@ -48,6 +48,17 @@ const formQuestionParser = (form: HTMLFormElement): ParsedQuestion[] => {
             .replace(/&quot;/g, "'"); // Replace escaped quotes
         const question = JSON.parse(betterDataParams || '[]')[0];
 
+        if (!question) {
+            return {
+                title: "",
+                moreInfo: "",
+                type: -1,
+                id: "",
+                required: false,
+                options: [],
+            }
+        }
+
 
         const questionTitle = question[1];
 
