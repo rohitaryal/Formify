@@ -5,6 +5,7 @@
 // @author       rohitaryal
 // @license      MIT
 // @grant        GM_addElement
+// @grant        GM_addStyle
 // @namespace    https://docs.google.com/
 // @match        https://docs.google.com/forms/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=docs.google.com

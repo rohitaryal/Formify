@@ -1,4 +1,4 @@
-import { groupedLog } from "./Utils";
+import { groupedLog } from "./Utils.ts";
 
 
 const request = async (

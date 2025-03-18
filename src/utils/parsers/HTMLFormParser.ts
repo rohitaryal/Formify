@@ -1,3 +1,7 @@
+/**
+ * This is `HTML Form Parser` that will parse html and build ParsedResult manually
+ */
+
 const formHeaderParser = (form: HTMLFormElement) => {
     // Form further contains a main body content
     const formContentContainer = form.querySelector(".lrKTG");
@@ -18,7 +22,7 @@ const formHeaderParser = (form: HTMLFormElement) => {
     }
 }
 
-const formQuestionParser = (form: HTMLFormElement): ParsedQuestion => {
+const formQuestionParser = (form: HTMLFormElement): ParsedQuestion[] => {
     // Strict type checking form: HTMLFormElement
     if (!(form instanceof HTMLFormElement))
         throw new Error("[!] I strictly require HTMLFormElement to parse header");
@@ -34,7 +38,7 @@ const formQuestionParser = (form: HTMLFormElement): ParsedQuestion => {
         console.warn("[W] No questions found.");
 
     // Map each question to beautified parsed question
-    const parsedQuestions = [...questionList]?.map((questionContainer) => {
+    const parsedQuestions: ParsedQuestion[] = [...questionList]?.map((questionContainer) => {
         // This parent div holds 'data-params' which contain parsable question details
         const infoContainerDiv = questionContainer.querySelector("div[jsmodel='CP1oW']");
 
@@ -65,7 +69,7 @@ const formQuestionParser = (form: HTMLFormElement): ParsedQuestion => {
 
         // Options will be null for question types like 
         // paragraphs, short answers
-        const options = question[4][0][1]?.map((option: any) => {
+        const options: ParsedOption[] = question[4][0][1]?.map((option: any) => {
             return {
                 'value': option[0],
                 // The option might contain more information
@@ -107,3 +111,5 @@ const parse = (): ParsedResult => {
         questions: parsedQuestionList,
     }
 }
+
+export { parse }

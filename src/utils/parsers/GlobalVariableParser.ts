@@ -1,3 +1,8 @@
+/**
+ * This is a `Global Variable Parser` - meaning it will parse questions
+ * based on the global variable `FB_PUBLIC_LOAD_DATA_`
+ */
+
 const parse = (data: any[]): ParsedResult => {
     // These are form details
     const formTitle = data[1][8];
@@ -28,7 +33,7 @@ const parse = (data: any[]): ParsedResult => {
         // Parse nested options in proper readable way
         // 'question[4][0][1]' when the question is something
         // like short answer, paragraph, etc,
-        const options = question[4][0][1]?.map((option: any) => {
+        const options: ParsedOption[] = question[4][0][1]?.map((option: any) => {
             return {
                 'value': option[0],
                 // The option might contain more information

@@ -1,0 +1,277 @@
+body.hidden {
+    overflow: hidden;
+}
+
+.dialog-container * {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui;
+    box-sizing: border-box;
+}
+
+.dialog-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 98vw;
+    background-color: rgba(0, 0, 0, 0.836);
+    z-index: 999;
+    display: none;
+}
+
+.dialog-container .dialog {
+    z-index: 1000;
+    position: relative;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 80%;
+    width: 25rem;
+    background-color: white;
+    border-radius: .5rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.dialog-container.active {
+    display: block;
+}
+
+.dialog-container .dialog .formify-header {
+    display: flex;
+    width: 100%;
+    padding: .5rem 1rem .5rem .5rem;
+    gap: 1rem;
+    align-items: center;
+    font-size: xx-large;
+    font-family: system-ui;
+    border-bottom: 4px solid rgba(0, 0, 255, 0.45);
+}
+
+.dialog-container .dialog .formify-header .formify-text {
+    flex: 1;
+}
+
+.dialog-container .dialog .formify-header .formify-text b {
+    font-weight: 600;
+    font-size: 1.2em;
+    background-clip: text;
+    color: transparent;
+    background-image: linear-gradient(to right, #159957, #155799, rgb(81, 81, 255));
+    animation: animateheader 2s linear infinite;
+}
+
+@keyframes animateheader {
+
+    0%,
+    100% {
+        filter: hue-rotate(0deg);
+    }
+
+    100% {
+        filter: hue-rotate(360deg);
+    }
+}
+
+.dialog-container .dialog .formify-header .close {
+    cursor: pointer;
+    transition-duration: .2s;
+}
+
+.dialog-container .dialog .formify-header .close:hover {
+    opacity: .5;
+}
+
+.dialog-container .dialog .formify-header .close {
+    font-size: 2.5rem;
+}
+
+.dialog-container .dialog .formify-header .close:active {
+    transform: scale(1.1);
+}
+
+.dialog-container .dialog .form-body {
+    flex: 1;
+    width: 100%;
+    overflow-y: auto;
+}
+
+.dialog-container .dialog .form-body ul {
+    list-style-type: none;
+}
+
+.dialog-container .dialog .form-body ul li {
+    font-size: large;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 255, 0.192);
+}
+
+.dialog-container .dialog .form-body ul li code {
+    background-color: rgba(128, 128, 128, 0.084);
+    padding: .2em;
+    border-radius: 5px;
+    color: rgb(21, 21, 21);
+}
+
+.dialog-container .dialog .form-body ul label {
+    flex: 1;
+    font-size: 1.2rem;
+    padding: .5rem 0;
+}
+
+.dialog-container .dialog .form-body ul input,
+.dialog-container .dialog .form-body ul select {
+    outline: none;
+    border: 2px solid rgba(0, 0, 255, 0.192);
+    font-size: 1.2rem;
+    padding: .5rem;
+    width: 60%;
+    border-radius: .5rem;
+    background-color: transparent;
+}
+
+.dialog-container .dialog .form-footer {
+    width: 100%;
+    display: flex;
+    padding: .1rem .5rem;
+    gap: .5rem;
+    align-items: center;
+    border-top: 2px solid rgba(0, 0, 0, 0.107);
+}
+
+.dialog-container .dialog .form-footer img {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.dialog-container .dialog .form-footer a {
+    text-decoration: none;
+    color: #155799;
+}
+
+.ai-container {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: fit-content;
+    margin: .5rem;
+    border-radius: 1rem;
+    box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 8px;
+}
+
+.ai-container.inactive {
+    display: none;
+}
+
+.ai-container .container-header {
+    display: flex;
+    padding: .5rem 1rem;
+    align-items: center;
+    background-color: rgba(0, 0, 255, 0.192);
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.201);
+}
+
+.ai-container .container-header .buttons button {
+    border: none;
+    cursor: pointer;
+    padding: .5rem;
+    border-radius: .3rem;
+    background-color: transparent;
+}
+
+.ai-container .container-header .buttons button:hover {
+    color: white;
+    background-color: rgba(0, 0, 0, 0.322);
+}
+
+.ai-container .container-body {
+    padding: 1rem;
+    color: rgb(20, 20, 34);
+}
+
+
+.aiChatDialog {
+    position: fixed; /* Stay in place on the screen */
+    top: 0; /* stick to the top  */
+    right: 0; /* stick to the right */
+    transform: translate(0,0);  /* Reset transform properties, crucial */
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    height: 400px;
+    display: none;
+    flex-direction: column;
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 1000;
+    left: auto; /* Add this to ensure it doesn't try to be on the left */
+}
+
+
+.dialogHeader {
+    background-color: #ddd;
+    padding: 10px;
+    cursor: move;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.closeButton {
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.chatHistory {
+    flex-grow: 1;
+    padding: 10px;
+    overflow-y: auto;
+}
+
+.chatInputArea {
+    padding: 10px;
+    border-top: 1px solid #ccc;
+    display: flex;
+    outline: none;
+    align-items: center;
+}
+
+.messageInput {
+    flex-grow: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin-right: 5px;
+}
+
+.sendButton {
+    padding: 8px 12px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.message {
+    margin-bottom: 5px;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.userMessage {
+    background-color: #DCF8C6;
+    text-align: right;
+}
+
+.aiMessage {
+    background-color: #ECE5DD;
+    text-align: left;
+}
