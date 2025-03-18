@@ -42,7 +42,7 @@ Press `ALT` + `M` key to view/hide AI settings
 
    - ![Greasy Fork](https://www.google.com/s2/favicons?sz=16&domain=greasyfork.org) [Greasyfork.org](https://greasyfork.org/en/scripts/480209-google-formify) or
 
-   - ![GitHub](https://www.google.com/s2/favicons?sz=8&domain=github.com) [Github](https://github.com/rohitaryal/Formify/blob/main/dist/formify.user.js)
+   - ![GitHub](https://www.google.com/s2/favicons?sz=8&domain=github.com) [Github](https://github.com/rohitaryal/Formify/raw/refs/heads/main/dist/formify.user.js)
 
 3. **(Optional)** You can check the script by filling up [THIS GOOGLE FORM](https://docs.google.com/forms/d/e/1FAIpQLSd5A4xLjNMmo9MxlMRSXYBiAd66eIHkrCInFNZ9aCs4HLIiyw/viewform)
 
