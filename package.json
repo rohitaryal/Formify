@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "build": "bun build/build.ts",
-    "dev": "bun --watch build/serve.ts"
+    "dev": "bun --watch build/serve.ts",
+    "final": "bun build/build.ts && mv dist/index.js dist/formify.user.js && rm -rf dist/index.js"
   },
   "devDependencies": {
     "@types/bun": "latest"
