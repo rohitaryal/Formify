@@ -54,8 +54,6 @@ Press `ALT` + `M` key to view/hide AI settings
 - Flexible UI scraping 🍭
 - Can be used as a library for scraping form 🍷
 
-Previous codes were literally junk(and this one still is) but there won't be such vast UI and paradigm changes 🔫 Updates will be rolled out in this codebase from now on. No further changes 🦀
-
 ---
 
 _In case of bugs and errors please please please submit an issue :)_
