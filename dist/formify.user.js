@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Formify
-// @version      4
+// @version      4.1
 // @description  Let AI solve your google forms
 // @author       rohitaryal
 // @license      MIT
@@ -11,6 +11,7 @@
 // @match        https://docs.google.com/forms/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=docs.google.com
 // ==/UserScript==
+
 
 const css = `body.hidden {
     overflow: hidden;
@@ -24,11 +25,11 @@ const css = `body.hidden {
 }
 
 .dialog-container {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-    width: 98vw;
+    width: 100vw;
     background-color: rgba(0, 0, 0, 0.836);
     z-index: 999;
     display: none;
@@ -41,7 +42,7 @@ const css = `body.hidden {
     left: 50%;
     transform: translate(-50%, -50%);
     height: 80%;
-    width: 25rem;
+    width: 30rem;
     background-color: white;
     border-radius: .5rem;
     overflow: hidden;
@@ -288,7 +289,14 @@ const css = `body.hidden {
 .aiMessage {
     background-color: #ECE5DD;
     text-align: left;
-}`;
+}
+
+@media(max-width: 600px) {
+    .dialog-container .dialog {
+        width: 25rem;
+    }
+}
+`;
 
 const js = `const overlay = document.querySelector(".dialog-container");
 const dialog = document.querySelector(".dialog-container .dialog");

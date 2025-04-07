@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Formify
-// @version      4
+// @version      4.1
 // @description  Let AI solve your google forms
 // @author       rohitaryal
 // @license      MIT
