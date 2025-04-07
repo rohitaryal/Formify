@@ -10,11 +10,11 @@ body.hidden {
 }
 
 .dialog-container {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100vh;
-    width: 98vw;
+    width: 100vw;
     background-color: rgba(0, 0, 0, 0.836);
     z-index: 999;
     display: none;
@@ -27,7 +27,7 @@ body.hidden {
     left: 50%;
     transform: translate(-50%, -50%);
     height: 80%;
-    width: 25rem;
+    width: 30rem;
     background-color: white;
     border-radius: .5rem;
     overflow: hidden;
@@ -274,4 +274,10 @@ body.hidden {
 .aiMessage {
     background-color: #ECE5DD;
     text-align: left;
+}
+
+@media(max-width: 600px) {
+    .dialog-container .dialog {
+        width: 25rem;
+    }
 }
